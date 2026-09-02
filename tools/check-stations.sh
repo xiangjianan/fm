@@ -4,7 +4,7 @@
 #   --quick 只验证播放列表，不抓分片
 # 兼容 macOS 自带 bash 3.2（未使用 mapfile）
 set -uo pipefail
-HTML="index.html"
+HTML="src/data/stations.ts"
 QUICK="${1:-}"
 TDIR=$(mktemp -d); trap 'rm -rf "$TDIR"' EXIT
 
