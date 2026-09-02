@@ -9,7 +9,34 @@
 <style>/* Task 3/5 填充 */</style>
 </head>
 <body>
-<!-- Task 3 填充：收音机面板结构 -->
+<div class="radio">
+  <div class="dial">
+    <div class="dial-scale" id="dialScale">
+      <div class="needle" id="needle"></div>
+    </div>
+    <div class="dial-nums"><span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span></div>
+  </div>
+  <div class="lcd">
+    <div class="lcd-left">
+      <div class="lcd-name" id="lcdName">山河收音机</div>
+      <div class="lcd-sub" id="lcdSub">选择一个电台开始收听</div>
+    </div>
+    <div class="lcd-vu" id="vu"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="lcd-freq" id="lcdFreq">FM —</div>
+  </div>
+  <div class="controls">
+    <button class="knob" id="playBtn" aria-label="播放/暂停"><span class="knob-icon">▶</span></button>
+    <div class="band-strip" id="bandStrip"></div>
+    <button class="search-toggle" id="searchToggle" aria-label="搜索">🔍</button>
+  </div>
+  <input type="search" id="searchBox" class="search-box" placeholder="搜索电台 / 省份…" hidden>
+  <div class="knob-volume">
+    <div class="knob-vol" id="volKnob"><div class="knob-mark"></div></div>
+    <div class="knob-vol-label">音量</div>
+  </div>
+  <ul class="station-list" id="stationList"></ul>
+  <div class="foot">数据来源：央广网 / 各地广播融媒体公开直播流 · <span id="stationCount"></span></div>
+</div>
 <audio id="audio" playsinline></audio>
 <script>
 "use strict";
@@ -232,8 +259,9 @@ const Radio = (() => {
   audio.addEventListener("playing", () => emit("playing"));
   audio.addEventListener("pause", () => { if (state === "playing") emit("paused"); });
   audio.addEventListener("error", () => { if (state !== "idle") fail(); });
-  audio.addEventListener("stalled", () => { if (state === "playing") fail(); });
-  audio.addEventListener("waiting", () => emit("loading"));
+  // 瞬时 rebuffer 不重启（hls.js 有分片级重试），仅显示调谐中；
+  // 真正的流死亡经 error 事件 / hls fatal 进入 fail()
+  audio.addEventListener("waiting", () => { if (state === "playing") emit("loading"); });
 
   if ("mediaSession" in navigator) {
     const setMS = () => {
@@ -252,6 +280,118 @@ const Radio = (() => {
            get audio() { return audio; }, on(fn) { listeners.push(fn); } };
 })();
 window.__radio = Radio;   // 调试与冒烟测试入口
+
+/* ============ 收藏（localStorage 降级内存） ============ */
+const Favs = (() => {
+  let set;
+  try { set = new Set(JSON.parse(localStorage.getItem("fm-favorites") || "[]")); }
+  catch { set = new Set(); }
+  const save = () => { try { localStorage.setItem("fm-favorites", JSON.stringify([...set])); } catch {} };
+  return { has: id => set.has(id),
+    toggle: id => { set.has(id) ? set.delete(id) : set.add(id); save(); },
+    get size() { return set.size; } };
+})();
+
+/* ============ UI 渲染 ============ */
+const $ = id => document.getElementById(id);
+
+// 刻度盘：87.5–108 线性映射到 0–100%
+const needle = $("needle");
+const freqToPct = f => Math.min(100, Math.max(0, (f - 87.5) / (108 - 87.5) * 100));
+const moveNeedle = f => { needle.style.left = freqToPct(f || 99.0) + "%"; };
+
+// 频段推子按键：32 地区 + 收藏
+let currentRegion = "中央";
+function selectRegion(r) {
+  currentRegion = r;
+  document.querySelectorAll(".band-btn").forEach(b => b.classList.toggle("active", b.dataset.region === r));
+  $("searchBox").value = ""; $("searchBox").hidden = true;
+  renderList();
+}
+(() => {
+  const strip = $("bandStrip");
+  REGIONS.forEach(r => {
+    const b = document.createElement("button");
+    b.className = "band-btn"; b.textContent = r.slice(0, 3); b.title = r; b.dataset.region = r;
+    b.onclick = () => selectRegion(r);
+    strip.appendChild(b);
+  });
+  const favBtn = document.createElement("button");
+  favBtn.className = "band-btn band-fav"; favBtn.textContent = "★"; favBtn.title = "收藏";
+  favBtn.dataset.region = "★收藏";
+  favBtn.onclick = () => selectRegion("★收藏");
+  strip.appendChild(favBtn);
+})();
+
+function listStations() {
+  const q = $("searchBox").value.trim();
+  if (q) return STATIONS.filter(s => (s.name + s.region).toLowerCase().includes(q.toLowerCase()));
+  if (currentRegion === "★收藏") return STATIONS.filter(s => Favs.has(s.id));
+  return STATIONS.filter(s => s.region === currentRegion);
+}
+function renderList() {
+  const ul = $("stationList"); ul.innerHTML = "";
+  const list = listStations();
+  if (!list.length) {
+    const li = document.createElement("li");
+    li.className = "empty";
+    li.textContent = currentRegion === "★收藏" ? "还没有收藏，点击电台行的 ★ 收藏" : "没有匹配的电台";
+    ul.appendChild(li);
+    return;
+  }
+  list.forEach(s => {
+    const li = document.createElement("li");
+    li.className = "station" + (Radio.station && Radio.station.id === s.id ? " current" : "");
+    li.innerHTML = `<button class="st-play" data-id="${s.id}">
+        <span class="st-dot"></span><span class="st-name">${s.name}</span>
+        <span class="st-freq">${s.freq ? "FM " + s.freq.toFixed(1) : "NET"}</span></button>
+      <button class="st-fav${Favs.has(s.id) ? " on" : ""}" data-id="${s.id}" aria-label="收藏">★</button>`;
+    ul.appendChild(li);
+  });
+}
+$("stationList").addEventListener("click", e => {
+  const play = e.target.closest(".st-play"), fav = e.target.closest(".st-fav");
+  if (play) {
+    const s = STATIONS.find(x => x.id === play.dataset.id);
+    if (Radio.station && Radio.station.id === s.id) Radio.toggle(); else Radio.play(s);
+  }
+  if (fav) { Favs.toggle(fav.dataset.id); renderList(); }
+});
+
+/* ============ 播放状态联动 ============ */
+const STATUS_TEXT = { idle: "选择一个电台开始收听", loading: "调谐中…",
+  playing: "● ON AIR", paused: "‖ 已暂停", error: "✕ 无信号，点旋钮重试" };
+const radioPanel = document.querySelector(".radio");
+Radio.on((st, s) => {
+  $("lcdName").textContent = s ? s.name : "山河收音机";
+  $("lcdSub").textContent = STATUS_TEXT[st];
+  $("lcdFreq").textContent = s ? (s.freq ? "FM " + s.freq.toFixed(1) : "NET") : "FM —";
+  $("playBtn").querySelector(".knob-icon").textContent = st === "playing" ? "❚❚" : "▶";
+  radioPanel.classList.toggle("is-error", st === "error");
+  radioPanel.classList.toggle("is-playing", st === "playing");
+  if (s) moveNeedle(s.freq);
+  renderList();
+});
+
+$("playBtn").onclick = () => {
+  if (!Radio.station) { Radio.play(STATIONS.find(s => s.region === currentRegion) || STATIONS[0]); return; }
+  if (Radio.state === "error") { Radio.retry(); return; }
+  Radio.toggle();
+};
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && !e.target.closest("input, button")) {
+    e.preventDefault(); $("playBtn").click();
+  }
+});
+$("searchToggle").onclick = () => {
+  const b = $("searchBox");
+  b.hidden = !b.hidden;
+  if (!b.hidden) b.focus(); else { b.value = ""; renderList(); }
+};
+$("searchBox").addEventListener("input", renderList);
+$("stationCount").textContent = `${STATIONS.length} 个电台 · ${REGIONS.length} 个地区`;
+moveNeedle(99.0);
+selectRegion("中央");
 </script>
 </body>
 </html>
