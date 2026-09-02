@@ -1,9 +1,35 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  base: "/fm/",            // GitHub Pages 子路径（Task 5 部署）
-  plugins: [vue()],
+  base: "/fm/",            // GitHub Pages 子路径
+  plugins: [
+    vue(),
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.svg"],
+      manifest: {
+        name: "山河收音机",
+        short_name: "山河收音机",
+        description: "复古收音机 · 在线收听全国各省电台直播",
+        theme_color: "#4a3321",
+        background_color: "#232323",
+        display: "standalone",
+        start_url: "/fm/",
+        icons: [
+          { src: "icons/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" },
+          { src: "icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        ],
+      },
+      workbox: {
+        // 音频直播流绝不缓存（直播语义 + 体积不可控）
+        navigateFallbackDenylist: [/\.m3u8$/, /\.mp3$/, /\.aac$/],
+        runtimeCaching: [],
+      },
+    }),
+  ],
   test: { environment: "node" },
 });
