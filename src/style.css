@@ -19,6 +19,7 @@
 * { box-sizing: border-box; margin: 0; }
 [hidden] { display: none !important; }
 html, body { height: 100%; }
+#app { height: 100%; }   /* 高度链：html→body→#app→shell，缺一断裂 */
 html { background: var(--bg); }
 
 body {
@@ -41,10 +42,12 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* —— 应用外壳：全屏单页，顶栏固定、列表内滚 —— */
+/* —— 应用外壳：全屏单页，顶栏固定、列表内滚 ——
+   高度用 html/body 100% 链：iOS standalone + viewport-fit=cover 下
+   100dvh 在部分系统取值偏短或不支持，导致底部露出纯黑背景 */
 .shell {
   position: relative; z-index: 1;
-  height: 100dvh;
+  height: 100%;
   max-width: 780px;
   margin: 0 auto;
   display: flex; flex-direction: column;
