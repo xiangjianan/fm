@@ -1,76 +1,81 @@
-/* ============ 山河收音机 v2 · 复古设计系统 ============ */
+/* ============================================================
+   山河收音机 · 暗夜电波设计系统
+   纯黑底 + 琥珀电光 + DM Mono 频率字 + 暖白正文
+   ============================================================ */
 :root {
-  --wood-1: #6b4a2f; --wood-2: #4a3321;
-  --cream: #f2e8d5; --cream-dark: #e2d4b8;
-  --orange: #e8722a; --lcd-bg: #1d2b22; --lcd-fg: #7fe8a8;
-  --ink: #2b2016; --line: #c9bda0;
+  --bg: #0a0a0c;
+  --panel: #131318;
+  --panel-2: #1a1a22;
+  --line: #262630;
+  --amber: #ffb35c;
+  --amber-hot: #ff8a2a;
+  --text: #ecebe6;
+  --dim: #8a8894;
+  --mono: "DM Mono", ui-monospace, Menlo, monospace;
+  --sans: "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", system-ui, sans-serif;
+  --glow: 0 0 14px rgba(255, 150, 60, .5);
+  --rail-w: 74px;
 }
 * { box-sizing: border-box; margin: 0; }
 [hidden] { display: none !important; }
 html, body { height: 100%; }
+html { background: var(--bg); }
+
 body {
-  min-height: 100vh; display: flex; align-items: safe center; justify-content: safe center;
-  padding: 14px;
-  background: repeating-linear-gradient(45deg, #2a2a2a 0 2px, #232323 2px 4px);
-  font-family: "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;   /* 应用内滚动，外壳不滚 */
 }
 
-/* —— 收音机机身 —— */
-.radio {
-  display: flex; flex-direction: column;
-  width: 100%; max-width: 640px; min-width: 0;
-  height: min(860px, 100%); min-height: 560px;
-  border-radius: 22px; padding: 18px;
-  background: linear-gradient(160deg, var(--cream) 0%, var(--cream-dark) 100%);
-  border: 10px solid transparent;
-  border-image: repeating-linear-gradient(88deg, var(--wood-1) 0 7px, var(--wood-2) 7px 14px) 1;
-  box-shadow: 0 24px 60px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.5);
-}
-
-/* —— 调频刻度盘（顶部装饰 + 播放联动指针） —— */
-.dial { background: #fdfaf1; border-radius: 10px; padding: 12px 14px 4px;
-  box-shadow: inset 0 2px 8px rgba(0,0,0,.18); flex: 0 0 auto; }
-.dial-scale {
-  position: relative; height: 30px;
+/* 氛围：顶部微弱电波光晕 + 细噪点 */
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background:
-    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 2%),
-    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 10%);
-  background-size: 100% 40%, 100% 100%;
-  background-repeat: no-repeat;
-  background-position: bottom left, bottom left;
+    radial-gradient(120% 46% at 50% -6%, rgba(255, 138, 42, .10), transparent 62%),
+    radial-gradient(70% 30% at 86% 108%, rgba(255, 138, 42, .05), transparent 60%);
 }
-.needle { position: absolute; top: -3px; bottom: -3px; width: 3px; background: var(--orange);
-  border-radius: 2px; transition: left .7s cubic-bezier(.3,1.4,.4,1);
-  box-shadow: 0 0 6px rgba(232,114,42,.8); }
-.dial-nums { display: flex; justify-content: space-between; font-size: 11px; color: #6b5d48;
-  font-family: ui-monospace, Menlo, monospace; padding-top: 2px; }
-
-/* —— 搜索 —— */
-.search-row { margin-top: 12px; flex: 0 0 auto; }
-.search-box { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #b9a888;
-  background: #fdfaf1; font: inherit; color: var(--ink); }
-.search-box:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
-
-/* —— 主区：桌面双栏 / 移动两级 —— */
-.main { flex: 1; display: grid; grid-template-columns: 170px 1fr; gap: 12px;
-  margin-top: 12px; min-height: 0; }
-
-@media (max-width: 767px) {
-  .radio { padding: 14px; border-radius: 16px; min-height: 100%; height: auto; }
-  .main { grid-template-columns: 1fr; }
-  .main > * { grid-area: 1 / 1; }
-  .main[data-view="provinces"] .stations { display: none; }
-  .main[data-view="stations"] .sidebar { display: none; }
-  .main[data-view="stations"] .stations { animation: slidein .22s ease-out; }
-  @keyframes slidein { from { transform: translateX(24px); opacity: .4; } to { transform: none; opacity: 1; } }
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* —— 全局动画与焦点 —— */
-@keyframes vu { from { height: 15% } to { height: 100% } }
-@keyframes pulse { from { opacity: .4 } to { opacity: 1 } }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+/* —— 应用外壳：全屏单页，顶栏固定、列表内滚 —— */
+.shell {
+  position: relative; z-index: 1;
+  height: 100dvh;
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex; flex-direction: column;
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 14px calc(env(safe-area-inset-bottom, 0px) + 10px);
+}
+
+/* —— 紧凑搜索 —— */
+.search-row { flex: 0 0 auto; margin: 10px 0 8px; }
+.search-box {
+  width: min(280px, 62%); height: 34px; padding: 0 12px 0 30px;
+  border-radius: 10px; border: 1px solid var(--line);
+  background: var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a8894' stroke-width='2.4'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='16.5' y1='16.5' x2='21' y2='21'/%3E%3C/svg%3E") no-repeat 10px center;
+  color: var(--text); font: 400 13px/1 var(--sans);
+  transition: border-color .18s, box-shadow .18s;
+}
+.search-box::placeholder { color: var(--dim); }
+.search-box:focus { outline: none; border-color: var(--amber-hot); box-shadow: 0 0 0 3px rgba(255, 138, 42, .14); }
+
+/* —— 主区：左窄省份轨道 + 右电台列表（全设备同页双栏） —— */
+.main {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: var(--rail-w) 1fr; gap: 10px;
+  margin-top: 8px;
+}
+@media (max-width: 420px) { :root { --rail-w: 60px; } .main { gap: 6px; } }
+
+/* —— 通用 —— */
+@keyframes pulse { from { opacity: .35 } to { opacity: 1 } }
+button { font-family: inherit; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--amber-hot); outline-offset: 2px; }
+::selection { background: rgba(255, 138, 42, .35); }
 @media (prefers-reduced-motion: reduce) {
-  .needle { transition: none; }
-  .lcd-vu i, .playing-dot, .st-dot { animation: none !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }

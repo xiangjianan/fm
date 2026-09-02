@@ -4,7 +4,6 @@ import { player } from "../composables/player";
 import { useFavorites } from "../composables/favorites";
 
 defineProps<{ stations: Station[]; title: string }>();
-defineEmits<{ back: [] }>();
 
 const favs = useFavorites();
 
@@ -16,27 +15,27 @@ function onRow(s: Station) {
 
 <template>
   <section class="stations">
-    <div class="stations-head">
-      <button class="back" @click="$emit('back')">‹ 返回</button>
-      <h2 class="stations-title">{{ title }}</h2>
+    <div class="head">
+      <h2 class="title">{{ title }}</h2>
+      <span class="count">{{ stations.length }}</span>
     </div>
-    <ul class="stations-scroll">
+    <ul class="scroll">
       <li v-if="!stations.length" class="empty">
         {{ title === "★收藏" ? "还没有收藏，点击电台行的 ★ 收藏" : "没有匹配的电台" }}
       </li>
       <li
         v-for="s in stations"
         :key="s.id"
-        class="station"
+        class="row"
         :class="{ current: player.current.value?.id === s.id }"
       >
-        <button class="st-play" @click="onRow(s)">
-          <span class="st-dot"></span>
-          <span class="st-name">{{ s.name }}</span>
-          <span class="st-freq">{{ s.freq ? `FM ${s.freq.toFixed(1)}` : "NET" }}</span>
+        <button class="play-area" @click="onRow(s)">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="name">{{ s.name }}</span>
+          <span class="freq">{{ s.freq ? `FM ${s.freq.toFixed(1)}` : "NET" }}</span>
         </button>
         <button
-          class="st-fav" :class="{ on: favs.has(s.id) }"
+          class="fav" :class="{ on: favs.has(s.id) }"
           :aria-label="favs.has(s.id) ? '取消收藏' : '收藏'" @click="favs.toggle(s.id)"
         >★</button>
       </li>
@@ -45,34 +44,37 @@ function onRow(s: Station) {
 </template>
 
 <style scoped>
-.stations { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
-.stations-head { display: flex; align-items: center; gap: 8px; padding-bottom: 6px; }
-.back { display: none; }
-.stations-title { font-size: 15px; font-weight: 700; color: var(--ink); }
-.stations-scroll { list-style: none; overflow-y: auto; flex: 1; min-height: 0;
+.stations { min-width: 0; min-height: 0; display: flex; flex-direction: column;
+  background: var(--panel); border-radius: 14px; border: 1px solid var(--line); overflow: hidden; }
+.head { flex: 0 0 auto; display: flex; align-items: baseline; gap: 8px;
+  padding: 13px 16px 11px; border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,138,42,.05), transparent); }
+.title { font-size: 15px; font-weight: 600; letter-spacing: .04em; }
+.count { font: 300 11px/1 var(--mono); color: var(--dim); }
+.scroll { flex: 1; min-height: 0; overflow-y: auto; list-style: none;
   scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
-.stations-scroll::-webkit-scrollbar { width: 5px; }
-.stations-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
-.empty { color: #8a7a5f; font-size: 13px; padding: 18px 6px; }
-.station { display: flex; align-items: center; border-bottom: 1px dashed var(--line); }
-.st-play { flex: 1; display: flex; align-items: center; gap: 10px; padding: 11px 6px;
-  background: none; border: none; font: inherit; color: var(--ink); cursor: pointer; text-align: left;
-  min-width: 0; }
-.st-dot { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
-.station.current .st-name { color: var(--orange); font-weight: 700; }
-.station.current .st-dot { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
-:global(.is-playing) .station.current .st-dot { animation: pulse 1s infinite alternate; }
-.st-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.st-freq { flex: 0 0 auto; font-family: ui-monospace, Menlo, monospace; font-size: 13px; opacity: .65; }
-.st-fav { flex: 0 0 auto; background: none; border: none; font-size: 17px; color: var(--line);
-  cursor: pointer; padding: 8px; }
-.st-fav.on { color: var(--orange); }
-@media (max-width: 767px) {
-  .back {
-    display: block; padding: 7px 12px; border: 1px solid #b9a888;
-    background: linear-gradient(#faf4e6, #e8dcc2); border-radius: 6px;
-    font: inherit; font-size: 14px; color: var(--ink); cursor: pointer;
-    box-shadow: 0 3px 0 #b9a888;
-  }
-}
+.scroll::-webkit-scrollbar { width: 4px; }
+.scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+.empty { padding: 22px 18px; color: var(--dim); font-size: 13px; }
+
+.row { display: flex; align-items: stretch; border-bottom: 1px solid rgba(38,38,48,.45);
+  transition: background .14s; }
+.row:last-child { border-bottom: none; }
+.row:hover { background: var(--panel-2); }
+.play-area { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0;
+  padding: 12px 6px 12px 16px; background: none; border: none; cursor: pointer;
+  text-align: left; color: var(--text); font: inherit; }
+.dot { flex: 0 0 auto; width: 5px; height: 5px; border-radius: 50%; background: var(--line); }
+.row.current .dot { background: var(--amber-hot); box-shadow: 0 0 8px var(--amber-hot);
+  animation: pulse 1.1s infinite alternate; }
+.row.current .name { color: var(--amber); font-weight: 600; }
+.name { flex: 1; min-width: 0; font-size: 14.5px; letter-spacing: .02em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.freq { flex: 0 0 auto; font: 300 12px/1 var(--mono); color: var(--dim); letter-spacing: .04em; }
+.row.current .freq { color: var(--amber); opacity: .85; }
+.fav { flex: 0 0 auto; padding: 0 14px 0 8px; background: none; border: none; cursor: pointer;
+  font-size: 15px; color: #3c3c48; transition: color .15s, transform .15s; }
+.fav:hover { color: var(--dim); }
+.fav.on { color: var(--amber); text-shadow: 0 0 8px rgba(255, 150, 60, .5); }
+.fav:active { transform: scale(.85); }
 </style>

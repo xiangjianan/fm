@@ -14,8 +14,8 @@ export default defineConfig({
         name: "山河收音机",
         short_name: "山河收音机",
         description: "复古收音机 · 在线收听全国各省电台直播",
-        theme_color: "#4a3321",
-        background_color: "#232323",
+        theme_color: "#0a0a0c",
+        background_color: "#0a0a0c",
         display: "standalone",
         start_url: "/fm/",
         icons: [
