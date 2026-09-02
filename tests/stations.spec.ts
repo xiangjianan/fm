@@ -21,7 +21,7 @@ describe("stations 数据完整性", () => {
     }
   });
 
-  it("规模 ≥ 120（v1 基线）", () => {
-    expect(STATIONS.length).toBeGreaterThanOrEqual(120);
+  it("规模 ≥ 160（v2 扩充后）", () => {
+    expect(STATIONS.length).toBeGreaterThanOrEqual(160);
   });
 });
