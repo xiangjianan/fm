@@ -6,7 +6,144 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>山河收音机 · 全国电台</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js" defer onerror="window.__hlsLoadFailed=true"></script>
-<style>/* Task 3/5 填充 */</style>
+<style>
+/* ============ 复古收音机样式 ============ */
+:root {
+  --wood-1: #6b4a2f; --wood-2: #4a3321;
+  --cream: #f2e8d5; --cream-dark: #e2d4b8;
+  --orange: #e8722a; --lcd-bg: #1d2b22; --lcd-fg: #7fe8a8;
+  --ink: #2b2016; --line: #c9bda0;
+}
+* { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
+body {
+  min-height: 100vh; display: flex; align-items: safe center; justify-content: safe center;
+  padding: 16px;
+  background: repeating-linear-gradient(45deg, #2a2a2a 0 2px, #232323 2px 4px);
+  font-family: "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.radio {
+  width: 100%; max-width: 480px; min-width: 0;
+  border-radius: 22px; padding: 20px;
+  background: linear-gradient(160deg, var(--cream) 0%, var(--cream-dark) 100%);
+  border: 10px solid transparent;
+  border-image: repeating-linear-gradient(88deg, var(--wood-1) 0 7px, var(--wood-2) 7px 14px) 1;
+  box-shadow: 0 24px 60px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.5);
+}
+/* —— 调频刻度盘 —— */
+.dial {
+  background: #fdfaf1; border-radius: 10px; padding: 12px 14px 4px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.18);
+}
+.dial-scale {
+  position: relative; height: 34px;
+  background:
+    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 2%),
+    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 10%);
+  background-size: 100% 40%, 100% 100%;
+  background-repeat: no-repeat;
+  background-position: bottom left, bottom left;
+}
+.needle {
+  position: absolute; top: -3px; bottom: -3px; width: 3px; background: var(--orange);
+  border-radius: 2px; transition: left .7s cubic-bezier(.3,1.4,.4,1);
+  box-shadow: 0 0 6px rgba(232,114,42,.8);
+}
+.dial-nums { display: flex; justify-content: space-between; font-size: 11px;
+  color: #6b5d48; font-family: ui-monospace, Menlo, monospace; padding-top: 2px; }
+/* —— 液晶屏 —— */
+.lcd {
+  margin-top: 14px; background: var(--lcd-bg); color: var(--lcd-fg); border-radius: 8px;
+  padding: 12px 14px; display: flex; align-items: center; gap: 12px;
+  font-family: ui-monospace, Menlo, monospace; box-shadow: inset 0 2px 10px rgba(0,0,0,.7);
+}
+.lcd-left { flex: 1; min-width: 0; }
+.lcd-name { font-size: 20px; font-weight: 700; letter-spacing: .06em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lcd-sub { font-size: 12px; opacity: .8; margin-top: 4px; }
+.lcd-freq { font-size: 22px; white-space: nowrap; }
+.lcd-vu { display: flex; gap: 3px; align-items: flex-end; height: 26px; }
+.lcd-vu i { width: 4px; background: var(--lcd-fg); height: 20%; border-radius: 1px; }
+.is-playing .lcd-vu i { animation: vu .7s ease-in-out infinite alternate; }
+.lcd-vu i:nth-child(2) { animation-delay: .1s } .lcd-vu i:nth-child(3) { animation-delay: .25s }
+.lcd-vu i:nth-child(4) { animation-delay: .05s } .lcd-vu i:nth-child(5) { animation-delay: .18s }
+@keyframes vu { from { height: 15% } to { height: 100% } }
+/* —— 控制区：播放旋钮 + 频段推子 + 搜索 —— */
+.controls { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.knob {
+  flex: 0 0 auto; width: 62px; height: 62px; border-radius: 50%; border: none; cursor: pointer;
+  background: radial-gradient(circle at 35% 30%, #7a5a3a, var(--wood-1) 70%);
+  box-shadow: 0 5px 12px rgba(0,0,0,.4), inset 0 2px 4px rgba(255,255,255,.3);
+  color: var(--cream); font-size: 20px;
+}
+.knob:active { transform: translateY(2px); box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+.band-strip { display: flex; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; padding-bottom: 4px;
+  scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.band-strip::-webkit-scrollbar { height: 5px; }
+.band-strip::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.band-btn {
+  flex: 0 0 auto; border: 1px solid #b9a888;
+  background: linear-gradient(#faf4e6, #e8dcc2);
+  border-radius: 6px; padding: 8px 10px; font-size: 13px; color: var(--ink);
+  cursor: pointer; box-shadow: 0 3px 0 #b9a888; transition: transform .12s, box-shadow .12s;
+  font-family: inherit;
+}
+.band-btn.active {
+  background: var(--orange); color: #fff; transform: translateY(3px);
+  box-shadow: 0 0 0 #b9a888, inset 0 2px 4px rgba(0,0,0,.3);
+}
+.band-fav { color: var(--orange); }
+.search-toggle { flex: 0 0 auto; border: 1px solid #b9a888; border-radius: 6px;
+  background: linear-gradient(#faf4e6, #e8dcc2); padding: 8px 10px; cursor: pointer;
+  box-shadow: 0 3px 0 #b9a888; font-size: 13px; }
+.search-box { width: 100%; margin-top: 12px; padding: 10px 12px; border-radius: 8px;
+  border: 1px solid #b9a888; background: #fdfaf1; font: inherit; color: var(--ink); }
+.search-box:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+/* —— 音量旋钮 —— */
+.knob-volume { display: flex; align-items: center; gap: 8px; margin-top: 14px; justify-content: flex-end; }
+.knob-vol { width: 44px; height: 44px; border-radius: 50%; cursor: grab; touch-action: none;
+  background: conic-gradient(from 0deg, var(--wood-1), var(--wood-2), var(--wood-1));
+  box-shadow: 0 4px 8px rgba(0,0,0,.35); position: relative; }
+.knob-vol:active { cursor: grabbing; }
+.knob-mark { position: absolute; left: 50%; top: 4px; width: 3px; height: 11px;
+  background: var(--cream); border-radius: 2px; transform: translateX(-50%); }
+.knob-vol-label { font-size: 11px; color: #7a6a4f; }
+/* —— 电台列表 —— */
+.station-list { list-style: none; margin-top: 14px; max-height: 40vh; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.station-list::-webkit-scrollbar { width: 5px; }
+.station-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.station { display: flex; align-items: center; border-bottom: 1px dashed var(--line); }
+.station .empty { border: none; color: #8a7a5f; padding: 16px 4px; font-size: 13px; }
+.st-play { flex: 1; display: flex; align-items: center; gap: 10px; padding: 11px 4px;
+  background: none; border: none; font: inherit; color: var(--ink); cursor: pointer; text-align: left; }
+.st-dot { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.station.current .st-name { color: var(--orange); font-weight: 700; }
+.station.current .st-dot { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+.is-playing .station.current .st-dot { animation: pulse 1s infinite alternate; }
+@keyframes pulse { from { opacity: .4 } to { opacity: 1 } }
+.st-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-freq { flex: 0 0 auto; margin-left: auto; font-family: ui-monospace, Menlo, monospace;
+  font-size: 13px; opacity: .65; }
+.st-fav { flex: 0 0 auto; background: none; border: none; font-size: 17px; color: var(--line);
+  cursor: pointer; padding: 8px; }
+.st-fav.on { color: var(--orange); }
+/* —— 错误态与页脚 —— */
+.is-error .lcd { background: #3a1414; color: #ff9b8a; }
+.foot { margin-top: 12px; font-size: 11px; color: #8a7a5f; text-align: center; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+@media (max-width: 420px) {
+  .radio { padding: 14px; border-radius: 16px; }
+  .lcd-name { font-size: 17px; } .lcd-freq { font-size: 18px; }
+  .knob { width: 54px; height: 54px; }
+  .band-btn { padding: 7px 8px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .needle { transition: none; }
+  .is-playing .lcd-vu i, .is-playing .station.current .st-dot { animation: none; }
+}
+</style>
 </head>
 <body>
 <div class="radio">
