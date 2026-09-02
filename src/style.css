@@ -1,1 +1,76 @@
-/* v2-T4 迁移 v1 复古样式（木纹/奶油/橙/液晶绿设计变量） */
+/* ============ 山河收音机 v2 · 复古设计系统 ============ */
+:root {
+  --wood-1: #6b4a2f; --wood-2: #4a3321;
+  --cream: #f2e8d5; --cream-dark: #e2d4b8;
+  --orange: #e8722a; --lcd-bg: #1d2b22; --lcd-fg: #7fe8a8;
+  --ink: #2b2016; --line: #c9bda0;
+}
+* { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  min-height: 100vh; display: flex; align-items: safe center; justify-content: safe center;
+  padding: 14px;
+  background: repeating-linear-gradient(45deg, #2a2a2a 0 2px, #232323 2px 4px);
+  font-family: "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* —— 收音机机身 —— */
+.radio {
+  display: flex; flex-direction: column;
+  width: 100%; max-width: 640px; min-width: 0;
+  height: min(860px, 100%); min-height: 560px;
+  border-radius: 22px; padding: 18px;
+  background: linear-gradient(160deg, var(--cream) 0%, var(--cream-dark) 100%);
+  border: 10px solid transparent;
+  border-image: repeating-linear-gradient(88deg, var(--wood-1) 0 7px, var(--wood-2) 7px 14px) 1;
+  box-shadow: 0 24px 60px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.5);
+}
+
+/* —— 调频刻度盘（顶部装饰 + 播放联动指针） —— */
+.dial { background: #fdfaf1; border-radius: 10px; padding: 12px 14px 4px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.18); flex: 0 0 auto; }
+.dial-scale {
+  position: relative; height: 30px;
+  background:
+    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 2%),
+    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 10%);
+  background-size: 100% 40%, 100% 100%;
+  background-repeat: no-repeat;
+  background-position: bottom left, bottom left;
+}
+.needle { position: absolute; top: -3px; bottom: -3px; width: 3px; background: var(--orange);
+  border-radius: 2px; transition: left .7s cubic-bezier(.3,1.4,.4,1);
+  box-shadow: 0 0 6px rgba(232,114,42,.8); }
+.dial-nums { display: flex; justify-content: space-between; font-size: 11px; color: #6b5d48;
+  font-family: ui-monospace, Menlo, monospace; padding-top: 2px; }
+
+/* —— 搜索 —— */
+.search-row { margin-top: 12px; flex: 0 0 auto; }
+.search-box { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #b9a888;
+  background: #fdfaf1; font: inherit; color: var(--ink); }
+.search-box:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+
+/* —— 主区：桌面双栏 / 移动两级 —— */
+.main { flex: 1; display: grid; grid-template-columns: 170px 1fr; gap: 12px;
+  margin-top: 12px; min-height: 0; }
+
+@media (max-width: 767px) {
+  .radio { padding: 14px; border-radius: 16px; min-height: 100%; height: auto; }
+  .main { grid-template-columns: 1fr; }
+  .main > * { grid-area: 1 / 1; }
+  .main[data-view="provinces"] .stations { display: none; }
+  .main[data-view="stations"] .sidebar { display: none; }
+  .main[data-view="stations"] .stations { animation: slidein .22s ease-out; }
+  @keyframes slidein { from { transform: translateX(24px); opacity: .4; } to { transform: none; opacity: 1; } }
+}
+
+/* —— 全局动画与焦点 —— */
+@keyframes vu { from { height: 15% } to { height: 100% } }
+@keyframes pulse { from { opacity: .4 } to { opacity: 1 } }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .needle { transition: none; }
+  .lcd-vu i, .playing-dot, .st-dot { animation: none !important; }
+}

@@ -29,8 +29,9 @@ defineEmits<{ select: [region: string]; back: [] }>();
 
 <style scoped>
 .sidebar { display: flex; flex-direction: column; min-height: 0; }
-.back { display: none; }
-.sidebar-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.back { display: none; flex: 0 0 auto; }
+.sidebar-scroll { flex: 1; min-height: 0; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
 .sidebar-scroll::-webkit-scrollbar { width: 5px; }
 .sidebar-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 .prov {
