@@ -10,6 +10,7 @@
 </head>
 <body>
 <!-- Task 3 填充：收音机面板结构 -->
+<audio id="audio" playsinline></audio>
 <script>
 "use strict";
 /* ============ 电台数据（2026-09-02 验证） freq:0=无公开频率(显示NET,指针按99.0) ============ */
@@ -173,6 +174,83 @@ const STATIONS = [
 
 /* 地区顺序：中央在最前，其余按拼音升序（UI 频段按键顺序） */
 const REGIONS = ["中央","安徽","北京","重庆","福建","甘肃","广东","广西","贵州","海南","河北","河南","黑龙江","湖北","湖南","吉林","江苏","江西","辽宁","内蒙古","宁夏","青海","山东","山西","陕西","上海","四川","天津","西藏","新疆","云南","浙江"];
+
+/* ============ 播放引擎 ============ */
+const Radio = (() => {
+  const audio = document.getElementById("audio");
+  audio.preload = "none";
+  let current = null;        // 当前台对象
+  let state = "idle";        // idle | loading | playing | paused | error
+  let retryCount = 0, usingBackup = false, retryTimer = null;
+  const listeners = [];
+  const emit = (st, stn) => { state = st; listeners.forEach(fn => fn(st, stn || current)); };
+
+  let detach = null;
+  function attach(url) {
+    const canNative = audio.canPlayType("application/vnd.apple.mpegurl");
+    if (/\.m3u8(\?|$)/i.test(url) && !canNative && window.Hls && Hls.isSupported()) {
+      const hls = new Hls({ liveDurationInfinity: true, manifestLoadingTimeOut: 8000,
+        fragLoadingTimeOut: 10000, manifestLoadingMaxRetry: 2 });
+      hls.loadSource(url); hls.attachMedia(audio);
+      hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) fail(); });
+      return () => hls.destroy();
+    }
+    audio.src = url;
+    return () => { audio.removeAttribute("src"); audio.load(); };
+  }
+
+  function play(station) {
+    clearTimeout(retryTimer);
+    if (detach) detach();
+    current = station; retryCount = 0; usingBackup = false;
+    start();
+  }
+  function start() {
+    const url = usingBackup && current.backup ? current.backup : current.url;
+    emit("loading");
+    if (window.__hlsLoadFailed && !audio.canPlayType("application/vnd.apple.mpegurl")
+        && /\.m3u8/i.test(url)) { emit("error"); return; }
+    detach = attach(url);
+    audio.play().catch(() => emit("paused"));
+  }
+  function fail() {
+    if (retryCount < 2) {                       // 同源重试 2 次，指数退避
+      retryCount++;
+      retryTimer = setTimeout(start, retryCount === 1 ? 1000 : 3000);
+      return;
+    }
+    if (!usingBackup && current.backup) {        // 换备用源
+      usingBackup = true; retryCount = 0;
+      retryTimer = setTimeout(start, 500);
+      return;
+    }
+    emit("error");
+  }
+  const toggle = () => state === "playing" ? (audio.pause(), emit("paused")) : start();
+  const retry = () => { retryCount = 0; start(); };
+
+  audio.addEventListener("playing", () => emit("playing"));
+  audio.addEventListener("pause", () => { if (state === "playing") emit("paused"); });
+  audio.addEventListener("error", () => { if (state !== "idle") fail(); });
+  audio.addEventListener("stalled", () => { if (state === "playing") fail(); });
+  audio.addEventListener("waiting", () => emit("loading"));
+
+  if ("mediaSession" in navigator) {
+    const setMS = () => {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: current.name, artist: current.freq ? `FM ${current.freq.toFixed(1)}` : "网络电台",
+        album: `山河收音机 · ${current.region}` });
+    };
+    listeners.push(s => { if (s === "playing") setMS(); });
+    try {
+      navigator.mediaSession.setActionHandler("play", () => start());
+      navigator.mediaSession.setActionHandler("pause", () => { audio.pause(); emit("paused"); });
+    } catch {}
+  }
+  return { play, toggle, retry, get state() { return state; }, get station() { return current; },
+           get audio() { return audio; }, on(fn) { listeners.push(fn); } };
+})();
+window.__radio = Radio;   // 调试与冒烟测试入口
 </script>
 </body>
 </html>
