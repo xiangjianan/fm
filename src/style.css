@@ -29,12 +29,12 @@ body {
   overflow: hidden;   /* 应用内滚动，外壳不滚 */
 }
 
-/* 氛围：顶部微弱电波光晕 + 细噪点 */
+/* 氛围：顶部/底部呼应的电波光晕 + 细噪点 */
 body::before {
   content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background:
     radial-gradient(120% 46% at 50% -6%, rgba(255, 138, 42, .10), transparent 62%),
-    radial-gradient(70% 30% at 86% 108%, rgba(255, 138, 42, .05), transparent 60%);
+    radial-gradient(110% 30% at 50% 112%, rgba(255, 138, 42, .07), transparent 58%);
 }
 body::after {
   content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .05;
@@ -70,6 +70,15 @@ body::after {
   margin-top: 8px;
 }
 @media (max-width: 420px) { :root { --rail-w: 60px; } .main { gap: 6px; } }
+
+/* —— 底栏：化解安全区黑条，形成收尾 —— */
+.footbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 12px;
+  margin-top: 10px;
+  font: 300 9px/1 var(--mono); color: #55555f; letter-spacing: .3em;
+}
+.footline { flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 138, 42, .35), transparent); }
 
 /* —— 通用 —— */
 @keyframes pulse { from { opacity: .35 } to { opacity: 1 } }

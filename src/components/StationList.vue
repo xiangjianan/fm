@@ -7,6 +7,11 @@ defineProps<{ stations: Station[]; title: string }>();
 
 const favs = useFavorites();
 
+// 源无 CORS 的台（xmcdn）仅 Safari 原生 HLS 可播；
+// Chromium 的 canPlayType(mpegurl)="maybe" 有欺骗性，改用 UA 嗅探
+const isSafari = /^((?!chrome|android|edg).)*safari/i.test(navigator.userAgent);
+const limited = (s: Station) => s.safariOnly && !isSafari;
+
 function onRow(s: Station) {
   if (player.current.value?.id === s.id) player.toggle();
   else player.play(s);
@@ -31,7 +36,7 @@ function onRow(s: Station) {
       >
         <button class="play-area" @click="onRow(s)">
           <span class="dot" aria-hidden="true"></span>
-          <span class="name">{{ s.name }}</span>
+          <span class="name">{{ s.name }}<sup v-if="limited(s)" class="s-mark" title="此源仅 Safari / iPhone 可播">S</sup></span>
           <span class="freq">{{ s.freq ? `FM ${s.freq.toFixed(1)}` : "NET" }}</span>
         </button>
         <button
@@ -70,6 +75,7 @@ function onRow(s: Station) {
 .row.current .name { color: var(--amber); font-weight: 600; }
 .name { flex: 1; min-width: 0; font-size: 14.5px; letter-spacing: .02em;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-mark { font: 500 9px/1 var(--mono); color: #6a6a78; margin-left: 3px; }
 .freq { flex: 0 0 auto; font: 300 12px/1 var(--mono); color: var(--dim); letter-spacing: .04em; }
 .row.current .freq { color: var(--amber); opacity: .85; }
 .fav { flex: 0 0 auto; padding: 0 14px 0 8px; background: none; border: none; cursor: pointer;

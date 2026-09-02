@@ -24,7 +24,7 @@ while IFS= read -r url; do
     if [ "$QUICK" != "--quick" ]; then
       seg=$(grep -v '^#' "$body" | grep -v '^$' | head -1)
       case "$seg" in
-        http*) segurl="$seg" ;;
+        http*) segurl="${seg/http:\/\//https:\/\//}" ;;   # http 分片按 https 探测（对应浏览器自动升级）
         *) segurl="${url%/*}/$seg" ;;
       esac
       sc=$(curl -s -o /dev/null -w '%{http_code}' --max-time 6 -r 0-2047 "$segurl")

@@ -22,6 +22,7 @@ export const STATIONS: Station[] = [
   { id: "nhzs", name: "南海之声", freq: 0, region: "中央", url: "https://sk.cri.cn/nhzs.m3u8", backup: "https://satellitepull.cnr.cn/live/wxnhzs/playlist.m3u8" },
   { id: "hitfm", name: "HIT FM", freq: 88.7, region: "中央", url: "https://satellitepull.cnr.cn/live/wxhitfm/playlist.m3u8" },
   { id: "cgtn", name: "China Plus", freq: 0, region: "中央", url: "https://sk.cri.cn/am846.m3u8" },
+  { id: "qstd", name: "轻松调频 Easy FM", freq: 91.5, region: "中央", url: "https://live.xmcdn.com/live/1042/64.m3u8", safariOnly: true },
   // —— 北京 ——
   { id: "bjxw", name: "北京新闻广播", freq: 94.5, region: "北京", url: "https://brtv-radiolive.rbc.cn/alive/fm945.m3u8" },
   { id: "bjjt", name: "北京交通广播", freq: 103.9, region: "北京", url: "https://brtv-radiolive.rbc.cn/alive/fm1039.m3u8" },
@@ -29,6 +30,7 @@ export const STATIONS: Station[] = [
   { id: "bjwy", name: "北京文艺广播", freq: 87.6, region: "北京", url: "https://brtv-radiolive.rbc.cn/alive/fm876.m3u8" },
   { id: "jjj", name: "京津冀之声", freq: 100.6, region: "北京", url: "https://brtv-radiolive.rbc.cn/alive/fm1006.m3u8" },
   { id: "bjcs", name: "北京城市广播", freq: 0, region: "北京", url: "https://satellitepull.cnr.cn/live/wxbjcsfwgl/playlist.m3u8" },
+  { id: "bjhyy", name: "北京好音乐", freq: 95.9, region: "北京", url: "https://live.xmcdn.com/live/964/64.m3u8", safariOnly: true },
   // —— 天津 ——（天津本地台暂无公开可播流，以覆盖京津冀的联播频率代替）
   { id: "jjjtj", name: "京津冀之声", freq: 100.6, region: "天津", url: "https://brtv-radiolive.rbc.cn/alive/fm1006.m3u8" },
   // —— 河北 ——
@@ -71,6 +73,7 @@ export const STATIONS: Station[] = [
   // —— 上海 ——
   { id: "shxw", name: "上海新闻广播", freq: 93.4, region: "上海", url: "https://satellitepull.cnr.cn/live/wx32shrmgb/playlist.m3u8" },
   { id: "dycj", name: "第一财经广播", freq: 97.7, region: "上海", url: "https://satellitepull.cnr.cn/live/wx32dycjgb/playlist.m3u8" },
+  { id: "loveradio", name: "Love Radio", freq: 103.7, region: "上海", url: "https://live.xmcdn.com/live/55/64.m3u8", safariOnly: true },
   // —— 江苏 ——
   { id: "jsxw", name: "江苏新闻综合广播", freq: 93.7, region: "江苏", url: "https://satellitepull.cnr.cn/live/wx32jsxwzhgb/playlist.m3u8" },
   { id: "jsjt", name: "江苏交通广播", freq: 101.1, region: "江苏", url: "https://satellitepull.cnr.cn/live/wx32jsjtgb/playlist.m3u8" },
@@ -99,6 +102,9 @@ export const STATIONS: Station[] = [
   { id: "fjds", name: "福建都市广播", freq: 98.7, region: "福建", url: "https://satellitepull.cnr.cn/live/wx32fjdndsgb/playlist.m3u8" },
   { id: "fjdn", name: "福建东南广播", freq: 0, region: "福建", url: "https://satellitepull.cnr.cn/live/wx32fjdngb/playlist.m3u8" },
   { id: "fjcj", name: "福建财经广播", freq: 96.1, region: "福建", url: "https://satellitepull.cnr.cn/live/wx32fjdnjjgb/playlist.m3u8" },
+  { id: "fjyy2", name: "福建音乐广播", freq: 91.3, region: "福建", url: "https://live.xmcdn.com/live/791/64.m3u8", safariOnly: true },
+  { id: "fjsjc", name: "福建私家车广播", freq: 98.7, region: "福建", url: "https://live.xmcdn.com/live/793/64.m3u8", safariOnly: true },
+  { id: "hxzz", name: "海峡之声综合广播", freq: 97.9, region: "福建", url: "https://live.xmcdn.com/live/191/64.m3u8", safariOnly: true },
   // —— 江西 ——
   { id: "jxxw", name: "江西新闻广播", freq: 0, region: "江西", url: "https://satellitepull.cnr.cn/live/wx32jiangxxwgb/playlist.m3u8" },
   { id: "jxyy", name: "江西音乐广播", freq: 0, region: "江西", url: "https://satellitepull.cnr.cn/live/wx32jiangxyygb/playlist.m3u8" },
@@ -139,6 +145,9 @@ export const STATIONS: Station[] = [
   { id: "gdnf", name: "南方生活广播", freq: 0, region: "广东", url: "https://satellitepull.cnr.cn/live/wxgdnfshgb/playlist.m3u8" },
   { id: "gdwt", name: "广东文体广播", freq: 0, region: "广东", url: "https://satellitepull.cnr.cn/live/wxgdwtgb/playlist.m3u8" },
   { id: "szjt", name: "深圳交通频率", freq: 0, region: "广东", url: "https://satellitepull.cnr.cn/live/wxszjjpl/playlist.m3u8" },
+  { id: "gdyyzs", name: "广东音乐之声", freq: 99.3, region: "广东", url: "https://live.xmcdn.com/live/74/64.m3u8", safariOnly: true },
+  { id: "gzqcyy", name: "广州汽车音乐电台", freq: 102.7, region: "广东", url: "https://live.xmcdn.com/live/257/64.m3u8", safariOnly: true },
+  { id: "gzxw", name: "广州新闻电台", freq: 96.2, region: "广东", url: "https://live.xmcdn.com/live/256/64.m3u8", safariOnly: true },
   // —— 广西 ——
   { id: "gxrm", name: "广西人民广播", freq: 0, region: "广西", url: "https://satellitepull.cnr.cn/live/wx32gxrmgb/playlist.m3u8" },
   { id: "gxjt", name: "广西交通广播", freq: 100.3, region: "广西", url: "https://satellitepull.cnr.cn/live/wx32gxjtgb/playlist.m3u8" },
@@ -153,6 +162,11 @@ export const STATIONS: Station[] = [
   { id: "cqjj", name: "重庆经济广播", freq: 101.5, region: "重庆", url: "https://satellitepull.cnr.cn/live/wxcqjjgb/playlist.m3u8" },
   { id: "cqwy", name: "重庆文艺广播", freq: 103.5, region: "重庆", url: "https://satellitepull.cnr.cn/live/wxcqwygb/playlist.m3u8" },
   { id: "cqds", name: "重庆都市广播", freq: 0, region: "重庆", url: "https://satellitepull.cnr.cn/live/wxcqdsgb/playlist.m3u8" },
+  { id: "cqyy", name: "重庆音乐广播", freq: 88.1, region: "重庆", url: "https://live.xmcdn.com/live/131/64.m3u8", safariOnly: true },
+  { id: "cjjt2", name: "重庆交通广播", freq: 95.5, region: "重庆", url: "https://live.xmcdn.com/live/130/64.m3u8", safariOnly: true },
+  { id: "byzs", name: "巴渝之声", freq: 104.5, region: "重庆", url: "https://live.xmcdn.com/live/1154/64.m3u8", safariOnly: true },
+  { id: "wzjt", name: "万州交通广播", freq: 0, region: "重庆", url: "https://live.xmcdn.com/live/1679/64.m3u8", safariOnly: true },
+  { id: "wzzh", name: "万州综合广播", freq: 0, region: "重庆", url: "https://live.xmcdn.com/live/1678/64.m3u8", safariOnly: true },
   // —— 四川 ——
   { id: "sczh", name: "四川综合广播", freq: 98.1, region: "四川", url: "https://satellitepull.cnr.cn/live/wxsczhgb/playlist.m3u8" },
   { id: "scjt", name: "四川交通广播", freq: 101.7, region: "四川", url: "https://satellitepull.cnr.cn/live/wxscjtgb/playlist.m3u8" },
@@ -180,12 +194,14 @@ export const STATIONS: Station[] = [
   { id: "sxxqc", name: "陕西青春广播", freq: 105.5, region: "陕西", url: "https://satellitepull.cnr.cn/live/wxsxxqcgb/playlist.m3u8" },
   { id: "sxjj", name: "陕西经济广播", freq: 0, region: "陕西", url: "https://satellitepull.cnr.cn/live/wxsxxjjgb/playlist.m3u8" },
   { id: "sxjt", name: "陕西交通广播", freq: 0, region: "陕西", url: "https://satellitepull.cnr.cn/live/wxsxxjtgb/playlist.m3u8" },
+  { id: "myfm", name: "MY FM 西安", freq: 105.5, region: "陕西", url: "https://live.xmcdn.com/live/870/64.m3u8", safariOnly: true },
   // —— 甘肃 ——
   { id: "gsxw", name: "甘肃新闻综合广播", freq: 0, region: "甘肃", url: "https://satellitepull.cnr.cn/live/wxgsxwzhgb/playlist.m3u8" },
   { id: "gsjt", name: "甘肃交通广播", freq: 104.8, region: "甘肃", url: "https://satellitepull.cnr.cn/live/wxgsjtgb/playlist.m3u8" },
   { id: "gshh", name: "甘肃黄河之声", freq: 0, region: "甘肃", url: "https://satellitepull.cnr.cn/live/wxgshhzs/playlist.m3u8" },
   { id: "gsds", name: "甘肃都市调频", freq: 0, region: "甘肃", url: "https://satellitepull.cnr.cn/live/wxgsdstb/playlist.m3u8" },
   { id: "gsqc", name: "甘肃青春调频", freq: 0, region: "甘肃", url: "https://satellitepull.cnr.cn/live/wxgsqcgb/playlist.m3u8" },
+  { id: "lzxw", name: "兰州新闻综合广播", freq: 97.3, region: "甘肃", url: "https://live.xmcdn.com/live/294/64.m3u8", safariOnly: true },
   // —— 青海 ——
   { id: "qhjj", name: "青海经济广播", freq: 0, region: "青海", url: "https://satellitepull.cnr.cn/live/wx32qhjjgb/playlist.m3u8" },
   { id: "qhjt", name: "青海交通音乐广播", freq: 97.2, region: "青海", url: "https://satellitepull.cnr.cn/live/wx32qhjtyygb/playlist.m3u8" },

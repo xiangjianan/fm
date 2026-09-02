@@ -21,7 +21,13 @@ describe("stations 数据完整性", () => {
     }
   });
 
-  it("规模 ≥ 160（v2 扩充后）", () => {
-    expect(STATIONS.length).toBeGreaterThanOrEqual(160);
+  it("规模 ≥ 178（v2.1 省会台扩充后）", () => {
+    expect(STATIONS.length).toBeGreaterThanOrEqual(178);
+  });
+
+  it("safariOnly 台的 url 必须是 https（iOS 自动升级要求）", () => {
+    for (const s of STATIONS.filter(x => x.safariOnly)) {
+      expect(s.url).toMatch(/^https:\/\//);
+    }
   });
 });

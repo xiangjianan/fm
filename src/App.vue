@@ -56,5 +56,12 @@ function selectRegion(r: string) {
         :title="query ? '搜索结果' : selectedRegion"
       />
     </div>
+
+    <!-- 底栏：与安全区融为一体 -->
+    <footer class="footbar" aria-hidden="true">
+      <span>SHANHE&nbsp;RADIO</span>
+      <i class="footline"></i>
+      <span>87.5&nbsp;—&nbsp;108&nbsp;MHz</span>
+    </footer>
   </div>
 </template>

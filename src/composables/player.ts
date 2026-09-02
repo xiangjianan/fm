@@ -18,8 +18,9 @@ export function usePlayer() {
   const set = (s: PlayerState) => { state.value = s; };
 
   function attach(url: string): () => void {
-    const canNative = audio.canPlayType("application/vnd.apple.mpegurl");
-    if (/\.m3u8(\?|$)/i.test(url) && !canNative && Hls.isSupported()) {
+    // m3u8 优先 hls.js（可预期的失败进重试链）；
+    // Safari 无 MSE 走原生 HLS（含 xmcdn 等无 CORS 源，Safari 原生不受 CORS 限制）
+    if (/\.m3u8(\?|$)/i.test(url) && Hls.isSupported()) {
       const hls = new Hls({
         liveDurationInfinity: true,
         manifestLoadingTimeOut: 8000,
