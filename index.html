@@ -19,8 +19,8 @@ const S = (id, name, freq, region, url, backup) =>
 
 const STATIONS = [
   // —— 中央人民广播电台 / 国际台 ——
-  S("zgzs","中国之声",106.1,"中央","https://ngcdn001.cnr.cn/live/zgzs/index.m3u8","https://satellitepull.cnr.cn/live/wxzgzs/playlist.m3u8"),
-  S("jjzs","经济之声",96.6,"中央","https://ngcdn002.cnr.cn/live/jjzs/index.m3u8","https://satellitepull.cnr.cn/live/wxjjzs/playlist.m3u8"),
+  S("zgzs","中国之声",106.1,"中央","https://satellitepull.cnr.cn/live/wxzgzs/playlist.m3u8","https://ngcdn001.cnr.cn/live/zgzs/index.m3u8"),
+  S("jjzs","经济之声",96.6,"中央","https://satellitepull.cnr.cn/live/wxjjzs/playlist.m3u8","https://ngcdn002.cnr.cn/live/jjzs/index.m3u8"),
   S("yyzs","音乐之声",90.0,"中央","https://satellitepull.cnr.cn/live/wxyyzs/playlist.m3u8"),
   S("wyzs","文艺之声",106.6,"中央","https://satellitepull.cnr.cn/live/wxwyzs/playlist.m3u8"),
   S("jdyy","经典音乐广播",101.8,"中央","https://satellitepull.cnr.cn/live/wxdszs/playlist.m3u8"),
@@ -39,8 +39,8 @@ const STATIONS = [
   S("bjyy","北京音乐广播",97.4,"北京","https://brtv-radiolive.rbc.cn/alive/fm974.m3u8"),
   S("bjwy","北京文艺广播",87.6,"北京","https://brtv-radiolive.rbc.cn/alive/fm876.m3u8"),
   S("jjj","京津冀之声",100.6,"北京","https://brtv-radiolive.rbc.cn/alive/fm1006.m3u8"),
-  // —— 天津 ——
-  S("tjxw","天津新闻广播",97.2,"天津","https://lhttp-hw.qtfm.cn/live/5022134/64k.mp3"),
+  // —— 天津 ——（天津本地台暂无公开可播流，以覆盖京津冀的联播频率代替）
+  S("jjjtj","京津冀之声",100.6,"天津","https://brtv-radiolive.rbc.cn/alive/fm1006.m3u8"),
   // —— 河北 ——
   S("hbzh","河北综合广播",104.3,"河北","https://satellitepull.cnr.cn/live/wxhebzhgb/playlist.m3u8"),
   S("hbjt","河北交通广播",99.2,"河北","https://satellitepull.cnr.cn/live/wxhebjtgb/playlist.m3u8"),
@@ -195,7 +195,7 @@ const Radio = (() => {
       hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) fail(); });
       return () => hls.destroy();
     }
-    audio.src = url;
+    audio.src = url;   // Safari 原生 HLS / 渐进式 mp3/aac
     return () => { audio.removeAttribute("src"); audio.load(); };
   }
 
@@ -237,6 +237,7 @@ const Radio = (() => {
 
   if ("mediaSession" in navigator) {
     const setMS = () => {
+      if (!current) return;                      // 首次播放前收到 playing 事件时忽略
       navigator.mediaSession.metadata = new MediaMetadata({
         title: current.name, artist: current.freq ? `FM ${current.freq.toFixed(1)}` : "网络电台",
         album: `山河收音机 · ${current.region}` });
