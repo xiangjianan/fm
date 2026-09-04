@@ -87,19 +87,12 @@ body::after {
 }
 @media (max-width: 420px) { :root { --rail-w: 60px; } .main { gap: 6px; } }
 
-/* —— 底部渐变过渡：化解安全区黑边 ——
-   列表/面板在底部透过一层透明→页面底色的竖直渐变，向页面背景平滑收尾，
-   PWA 安装后底部那条黑色安全区（Home 指示条）随之与页面底色渐变融合，
-   色调一致，不再是一条生硬的纯黑横条。 */
-.shell::after {
-  content: ""; position: fixed; left: 0; right: 0; bottom: 0;
-  height: calc(env(safe-area-inset-bottom, 0px) + 36px);
-  pointer-events: none; z-index: 3;
-  background: linear-gradient(180deg,
-    rgba(10, 10, 12, 0) 0%,
-    rgba(10, 10, 12, .45) 55%,
-    rgba(10, 10, 12, .9) 82%,
-    var(--bg) 100%);
+/* —— 底部分界线：列表与底部安全区之间的一条细分隔线 —— */
+.footrule {
+  flex: 0 0 auto;
+  margin-top: 10px;
+  height: 1px;
+  background: rgba(255, 138, 42, .32);
 }
 
 /* —— 通用 —— */

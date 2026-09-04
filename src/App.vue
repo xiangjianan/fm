@@ -57,6 +57,7 @@ function selectRegion(r: string) {
       />
     </div>
 
-    <!-- 底部由 .shell::after 的渐变过渡与安全区融为一体，不再占用列表空间 -->
+    <!-- 底部分界线：与安全区/底部边缘形成干净的分隔 -->
+    <footer class="footrule" aria-hidden="true"></footer>
   </div>
 </template>
