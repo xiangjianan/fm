@@ -56,8 +56,5 @@ function selectRegion(r: string) {
         :title="query ? '搜索结果' : selectedRegion"
       />
     </div>
-
-    <!-- 底部分界线：与安全区/底部边缘形成干净的分隔 -->
-    <footer class="footrule" aria-hidden="true"></footer>
   </div>
 </template>

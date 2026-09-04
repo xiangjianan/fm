@@ -87,14 +87,6 @@ body::after {
 }
 @media (max-width: 420px) { :root { --rail-w: 60px; } .main { gap: 6px; } }
 
-/* —— 底部分界线：列表与底部安全区之间的一条细分隔线 —— */
-.footrule {
-  flex: 0 0 auto;
-  margin-top: 10px;
-  height: 1px;
-  background: rgba(255, 138, 42, .32);
-}
-
 /* —— 通用 —— */
 @keyframes pulse { from { opacity: .35 } to { opacity: 1 } }
 button { font-family: inherit; }
