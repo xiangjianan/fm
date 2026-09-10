@@ -21,8 +21,8 @@ describe("stations 数据完整性", () => {
     }
   });
 
-  it("规模 ≥ 178（v2.1 省会台扩充后）", () => {
-    expect(STATIONS.length).toBeGreaterThanOrEqual(178);
+  it("规模 ≥ 220（v2.2 省会台与音乐台扩充后）", () => {
+    expect(STATIONS.length).toBeGreaterThanOrEqual(220);
   });
 
   it("safariOnly 台的 url 必须是 https（iOS 自动升级要求）", () => {
