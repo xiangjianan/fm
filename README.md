@@ -10,19 +10,19 @@ Built with Vue 3 + TypeScript + Vite; the output is pure static files.
 
 ```bash
 npm i
-npm run dev        # 本地开发（含手机局域网访问提示）
-npm run test       # Vitest 单元测试
-npm run typecheck  # vue-tsc 类型检查
-npm run build      # 构建到 dist/
-npm run preview    # 本地预览构建产物（PWA 在此环境生效）
+npm run dev        # local dev (includes LAN hint for phone testing)
+npm run test       # Vitest unit tests
+npm run typecheck  # type checking with vue-tsc
+npm run build      # build to dist/
+npm run preview    # preview build locally (PWA active in this env)
 ```
 
 ## Deploy to GitHub Pages
 
 ```bash
 npm run build
-npx gh-pages -d dist      # 或：仓库 Settings → Pages → 选 dist 分支
-# 访问 https://<用户名>.github.io/fm/
+npx gh-pages -d dist      # or: repo Settings → Pages → select the dist branch
+# visit https://<username>.github.io/fm/
 ```
 
 Once published, it can be "installed":
@@ -58,8 +58,8 @@ Known limitations:
 ## Data Maintenance
 
 ```bash
-bash tools/check-stations.sh          # 全量探活（播放列表 + 分片），全绿退出码 0
-bash tools/check-stations.sh --quick  # 快速只查播放列表
+bash tools/check-stations.sh          # full liveness check (playlists + segments); exit code 0 when all green
+bash tools/check-stations.sh --quick  # quick: playlists only
 ```
 
 Adding a station: add a line in `src/data/stations.ts` (the `Station` type), add the new province to `REGIONS` as well,
