@@ -30,4 +30,10 @@ describe("stations 数据完整性", () => {
       expect(s.url).toMatch(/^https:\/\//);
     }
   });
+
+  it("REGIONS 首项为「中央」，其余为省级行政区", () => {
+    // TopPlayer 待机概览按 REGIONS.length - 1 计算省份数，依赖这个约定
+    expect(REGIONS[0]).toBe("中央");
+    expect(REGIONS.length).toBeGreaterThan(1);
+  });
 });

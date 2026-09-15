@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { player } from "../composables/player";
+import { REGIONS, STATIONS } from "../data/stations";
+
+// 待机时的电台库概览：随数据自动更新，不要再手写数字
+// （REGIONS 首项是「中央」，其余为省/自治区/直辖市）
+const OVERVIEW = `中央 + ${REGIONS.length - 1} 省 · ${STATIONS.length} 个频率`;
 
 const name = computed(() => player.current.value?.name ?? "选择电台");
 const sub = computed(() => {
   const s = player.current.value;
-  if (!s) return "中央 + 31 省 · 163 个频率";
+  if (!s) return OVERVIEW;
   const freq = s.freq ? `FM ${s.freq.toFixed(1)}` : "NET";
   return `${s.region} · ${freq}`;
 });
