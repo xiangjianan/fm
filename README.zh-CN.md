@@ -68,9 +68,12 @@ bash tools/check-stations.sh --quick  # 快速只查播放列表
 ## 技术要点
 
 - 播放引擎 `src/composables/player.ts`：单 `<audio>` 实例；Safari 原生播 HLS，
-  其余浏览器经 hls.js（npm 引入）；失败链：同源重试 2 次（1s/3s 退避）→ 换备源 → 「无信号」
+  其余浏览器经 hls.js（npm 引入）；**hls.js 不进首屏主包**，挂载后空闲时预加载（`warmHls`），
+  失败链：同源重试 2 次（1s/3s 退避）→ 换备源 → 「无信号」
 - Media Session API：锁屏显示台名（iOS 16.4+）
-- PWA：vite-plugin-pwa（Workbox generateSW），仅预缓存应用外壳；
+- PWA：vite-plugin-pwa（Workbox generateSW），预缓存应用外壳 + 自托管字体；
+  `injectRegister: "script-defer"`（注册脚本不阻塞解析）；`index.html` 内联关键样式
+  （暗底 + STANDBY 骨架），冷启动首帧不再是浏览器白底；
   `navigateFallbackDenylist` 排除 m3u8/mp3/aac，直播流不做任何缓存
 - 状态管理：composables（player/favorites），未引入 Pinia
 - 设计文档与实现计划见 `docs/superpowers/`

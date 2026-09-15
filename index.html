@@ -15,10 +15,28 @@
     @font-face { font-family: "DM Mono"; src: url("%BASE_URL%fonts/dm-mono-300.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
     @font-face { font-family: "DM Mono"; src: url("%BASE_URL%fonts/dm-mono-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
     @font-face { font-family: "DM Mono"; src: url("%BASE_URL%fonts/dm-mono-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+
+    /* —— 关键内联样式：冷启动首帧就是暗色 + 有反馈 ——
+       深色底原本只存在于外部 style.css（渲染阻塞），CSS 到达前
+       窗口是浏览器默认白底；PWA 冷启动走网络时这段白屏会被放大。
+       内联后任何一次绘制都是主题色，骨架在 Vue 挂载时被替换掉。 */
+    html, body {
+      margin: 0; height: 100%; background: #0a0a0c; color: #ecebe6;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", system-ui, sans-serif;
+      overflow: hidden;
+    }
+    #app { height: 100%; }
+    #boot {
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; gap: .7em;
+      font: 400 12px/1 ui-monospace, Menlo, monospace; letter-spacing: .3em; color: #ffb35c; opacity: .85;
+    }
+    #boot i { width: 7px; height: 7px; border-radius: 50%; background: #ff8a2a; animation: boot-pulse 1s ease-in-out infinite; }
+    @keyframes boot-pulse { from { opacity: .25 } to { opacity: 1 } }
+    @media (prefers-reduced-motion: reduce) { #boot i { animation: none } }
   </style>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app"><div id="boot"><i></i>STANDBY</div></div>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

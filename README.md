@@ -68,9 +68,12 @@ then re-run `npm run test` (data integrity assertions) and the liveness script t
 ## Technical Notes
 
 - Playback engine `src/composables/player.ts`: a single `<audio>` instance; Safari plays HLS natively,
-  other browsers go through hls.js (imported via npm); failure chain: same-source retry 2 times (1s/3s backoff) → switch to backup source → "No Signal"
+  other browsers go through hls.js (imported via npm); **hls.js is kept out of the initial bundle** — it is
+  warmed up in the background once idle after mount (`warmHls`); failure chain: same-source retry 2 times
+  (1s/3s backoff) → switch to backup source → "No Signal"
 - Media Session API: shows the station name on the lock screen (iOS 16.4+)
-- PWA: vite-plugin-pwa (Workbox generateSW), precaching only the app shell;
+- PWA: vite-plugin-pwa (Workbox generateSW), precaching the app shell **and the self-hosted fonts**;
+  `injectRegister: "script-defer"` (the register script only runs on window load, so it must not block
+  parsing); `index.html` inlines the critical styles (dark background + STANDBY skeleton) so the first
+  cold-start frame is never the browser's white canvas;
   `navigateFallbackDenylist` excludes m3u8/mp3/aac — live streams are never cached
-- State management: composables (player/favorites), no Pinia
-- Design docs and implementation plan in `docs/superpowers/`

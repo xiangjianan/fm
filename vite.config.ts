@@ -9,7 +9,10 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
+      // registerSW.js 只在 window load 里注册 SW，没有理由阻塞解析
+      injectRegister: "script-defer",
+      // 自托管字体也要进 precache：否则每次启动都回源站拉 2 个 woff2
+      includeAssets: ["favicon.svg", "fonts/*.woff2"],
       manifest: {
         name: "山河收音机",
         short_name: "山河收音机",
